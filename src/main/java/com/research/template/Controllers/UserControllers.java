@@ -3,12 +3,12 @@ import com.google.gson.Gson;
 import com.research.template.DAO.UserDAO;
 import com.research.template.Domain.DTO.UserDTO;
 import com.research.template.Domain.Resources;
+import com.research.template.Model.UserModel;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,11 +21,17 @@ public class UserControllers {
 	@Autowired
 	UserDAO userDAO;
 
-//	@RequestMapping(value= {"/login"},method = RequestMethod.POST)
-//	public BaseClassDomain<UsersModel> loginAD(@RequestBody AuthenticationDTO requestData, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
-//		BaseClassDomain<UsersModel> responseData = null;
-//
-//	}
+	@RequestMapping(method = RequestMethod.POST)
+	public Resources<UserDTO> saveUser(@RequestBody UserDTO requestData, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
+		Resources<UserDTO> responseData = new Resources<>();
+		UserDTO dto = new UserDTO();
+
+		dto.setUser(userDAO.addUser(requestData.getUser().getName()));
+
+		responseData.throwSucceedResponse(dto);
+
+		return responseData;
+	}
 
 	@RequestMapping(value = {"/all"}, method = RequestMethod.GET)
 	public Resources<UserDTO> getUserAll(HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
@@ -37,7 +43,7 @@ public class UserControllers {
 
 		userDomain.setUsers(userDAO.findAll());
 
-		responseData.setSucceedResponse(userDomain);
+		responseData.throwSucceedResponse(userDomain);
 
 		return responseData;
 	}
@@ -55,7 +61,7 @@ public class UserControllers {
 			int tempId = Integer.parseInt(id);
 			userDomain.setUser(userDAO.findById(tempId));
 
-			responseData.setSucceedResponse(userDomain);
+			responseData.throwSucceedResponse(userDomain);
 			servletResponse.setStatus(200);
 		}catch(Exception e){
 			responseData.throwExceptionResponse(e.getMessage());

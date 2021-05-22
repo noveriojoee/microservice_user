@@ -2,21 +2,25 @@ package com.research.template.Domain;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.http.ResponseEntity;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Resources<T> {
+public class Resources<T>{
 	private String responseCode;
 	private String responseMessage;
 	private T responseObject;
 
 
-	public void setSucceedResponse(T responseObject){
+	public void throwSucceedResponse(T responseObject){
 		this.responseCode = "200";
 		this.responseMessage = "OK";
 		this.responseObject = responseObject;
 	}
 
-	public void throwExceptionResponse(String responseMessage){
+	public void throwExceptionResponse(String responseMessage) {
 		this.responseCode = "400";
 		this.responseMessage = responseMessage;
 		this.responseObject = null;

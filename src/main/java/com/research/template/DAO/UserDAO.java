@@ -18,9 +18,12 @@ public class UserDAO {
 		users.add(new UserModel(4,"Ferial"));
 	}
 
-	public void addUser(String name){
+	public UserModel addUser(String name){
 		int id = this.getSize()+1;
-		users.add(new UserModel(id,name));
+		UserModel createdUser = new UserModel(id,name);
+		users.add(createdUser);
+
+		return createdUser;
 	}
 
 	public void deleteUser(int id){
