@@ -16,22 +16,22 @@ public class UserControllers {
 //
 //	}
 
-	@RequestMapping(value= {"/get"},method = RequestMethod.GET)
-	public BaseClassDomain<GetListProductsActivityDTO> getListProducts(HttpServletResponse servletResponse,HttpServletRequest servletRequest) {
-		BaseClassDomain<GetListProductsActivityDTO> responseData = null;
-		Gson json = new Gson();
-		UUID ioGuid = UUID.randomUUID();
-
-		logger.info((servletRequest.getServletPath() + " : [ID]").replace("[ID]", ioGuid.toString()) + " | "
-				+ ApplicationConstant.LOG_FLAG_REQUEST.replace("[string]", ""));
-
-		responseData = this.productActivityServices.getListProduct();
-
-		logger.info((servletRequest.getServletPath() + " : [ID]").replace("[ID]", ioGuid.toString()) + " | "
-				+ ApplicationConstant.LOG_FLAG_RESPONSE.replace("[string]", json.toJson(responseData)));
-
-
-		return responseData;
-	}
+//	@RequestMapping(value= {"/get"},method = RequestMethod.GET)
+//	public BaseClassDomain<GetListProductsActivityDTO> getListProducts(HttpServletResponse servletResponse,HttpServletRequest servletRequest) {
+//		BaseClassDomain<GetListProductsActivityDTO> responseData = null;
+//		Gson json = new Gson();
+//		UUID ioGuid = UUID.randomUUID();
+//
+//		logger.info((servletRequest.getServletPath() + " : [ID]").replace("[ID]", ioGuid.toString()) + " | "
+//				+ ApplicationConstant.LOG_FLAG_REQUEST.replace("[string]", ""));
+//
+//		responseData = this.productActivityServices.getListProduct();
+//
+//		logger.info((servletRequest.getServletPath() + " : [ID]").replace("[ID]", ioGuid.toString()) + " | "
+//				+ ApplicationConstant.LOG_FLAG_RESPONSE.replace("[string]", json.toJson(responseData)));
+//
+//
+//		return responseData;
+//	}
 
 }
