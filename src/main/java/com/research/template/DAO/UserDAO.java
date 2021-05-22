@@ -4,11 +4,12 @@ package com.research.template.DAO;
 import com.research.template.Model.UserModel;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class UserDAO {
-	private static List<UserModel> users;
+	private static List<UserModel> users = new ArrayList<>();
 
 	static{
 		users.add(new UserModel(1,"Donny"));
