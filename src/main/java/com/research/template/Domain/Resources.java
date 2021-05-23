@@ -20,6 +20,12 @@ public class Resources<T>{
 		this.responseObject = responseObject;
 	}
 
+	public void throwResponseWithCode(String responseCode, String responseMessage,T responseObject){
+		this.responseCode = responseCode;
+		this.responseMessage = responseMessage;
+		this.responseObject = responseObject;
+	}
+
 	public void throwExceptionResponse(String responseMessage) {
 		this.responseCode = "400";
 		this.responseMessage = responseMessage;

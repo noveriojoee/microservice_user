@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class UserDAO {
@@ -26,15 +27,14 @@ public class UserDAO {
 		return createdUser;
 	}
 
-	public void deleteUser(int id){
-		UserModel result = null;
-		for (UserModel data:users) {
-			if (data.getId() == id){
-				result = data;
-				break;
-			}
+	public UserModel deleteUser(int id){
+		Optional<UserModel> userData = users.stream().filter(x -> x.getId() == id).findFirst();
+		if (userData.isPresent()){
+			users.remove(userData.get());
+			return userData.get();
+		}else{
+			return null;
 		}
-		users.remove(result);
 	}
 
 	public List<UserModel> findAll(){

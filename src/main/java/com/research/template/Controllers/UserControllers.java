@@ -1,4 +1,5 @@
 package com.research.template.Controllers;
+
 import com.google.gson.Gson;
 import com.research.template.DAO.UserDAO;
 import com.research.template.Domain.DTO.UserDTO;
@@ -49,7 +50,7 @@ public class UserControllers {
 	}
 
 	///NOTES : @PathVariable refering to {id}
-	@RequestMapping(value = {"/{id}"},method = RequestMethod.GET)
+	@RequestMapping(value = {"/{id}"}, method = RequestMethod.GET)
 	public Resources<UserDTO> getUserById(@PathVariable String id, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
 		Resources<UserDTO> responseData = new Resources<>();
 		UserDTO userDomain = new UserDTO();
@@ -57,13 +58,35 @@ public class UserControllers {
 		Gson json = new Gson();
 		UUID ioGuid = UUID.randomUUID();
 
-		try{
+		try {
 			int tempId = Integer.parseInt(id);
 			userDomain.setUser(userDAO.findById(tempId));
 
 			responseData.throwSucceedResponse(userDomain);
 			servletResponse.setStatus(200);
-		}catch(Exception e){
+		} catch (Exception e) {
+			responseData.throwExceptionResponse(e.getMessage());
+			servletResponse.setStatus(400);
+		}
+
+		return responseData;
+	}
+
+	@RequestMapping(value = {"/{id}"}, method = RequestMethod.DELETE)
+	public Resources<UserDTO> deleteUserById(@PathVariable String id, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
+		Resources<UserDTO> responseData = new Resources<>();
+
+		try {
+			int tempId = Integer.parseInt(id);
+			UserModel deletedData = this.userDAO.deleteUser(tempId);
+			if (deletedData != null){
+				responseData.throwSucceedResponse(null);
+			}else{
+				responseData.throwResponseWithCode("03","data not found",null);
+			}
+
+			servletResponse.setStatus(200);
+		} catch (Exception e) {
 			responseData.throwExceptionResponse(e.getMessage());
 			servletResponse.setStatus(400);
 		}
