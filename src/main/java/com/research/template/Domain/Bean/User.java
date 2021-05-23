@@ -1,19 +1,11 @@
-package com.research.template.Model;
+package com.research.template.Domain.Bean;
 
-public class UserModel {
+import javax.validation.constraints.Size;
+
+public class User {
 	private int id;
+	@Size(min = 2,max = 100,  message = "Name Length Must be more than 2 and less than 100 characters")
 	private String name;
-
-	public UserModel(){
-		super();
-		this.id = 0;
-		this.name = "mr. nobody";
-	}
-
-	public UserModel(int id, String name){
-		this.id = id;
-		this.name = name;
-	}
 
 	public int getId() {
 		return id;

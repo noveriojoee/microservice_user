@@ -4,15 +4,16 @@ import com.google.gson.Gson;
 import com.research.template.DAO.UserDAO;
 import com.research.template.Domain.DTO.UserDTO;
 import com.research.template.Domain.Resources;
+import com.research.template.Domain.Bean.User;
 import com.research.template.Model.UserModel;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.*;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -23,13 +24,23 @@ public class UserControllers {
 	UserDAO userDAO;
 
 	@RequestMapping(method = RequestMethod.POST)
-	public Resources<UserDTO> saveUser(@RequestBody UserDTO requestData, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
+	public Resources<UserDTO> saveUser(@RequestBody User requestData, HttpServletResponse servletResponse, HttpServletRequest servletRequest){
 		Resources<UserDTO> responseData = new Resources<>();
 		UserDTO dto = new UserDTO();
-
-		dto.setUser(userDAO.addUser(requestData.getUser().getName()));
-
-		responseData.throwSucceedResponse(dto);
+		try{
+			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+			Validator validator = factory.getValidator();
+			Set<ConstraintViolation<User>> violations = validator.validate(requestData);
+			Optional<ConstraintViolation<User>> validatedObject = violations.stream().findFirst();
+			if (validatedObject.isEmpty()){
+				dto.setUser(userDAO.addUser(requestData.getName()));
+				responseData.throwSucceedResponse(dto);
+			}else{
+				responseData.throwResponseWithCode("405","Bad Request "+validatedObject.get().getMessage(),null);
+			}
+		}catch(Exception e){
+			responseData.throwExceptionResponse(e.getMessage());
+		}
 
 		return responseData;
 	}
