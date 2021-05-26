@@ -6,6 +6,7 @@ import com.research.template.Domain.DTO.UserDTO;
 import com.research.template.Domain.Resources;
 import com.research.template.Domain.Bean.User;
 import com.research.template.Model.UserModel;
+import com.research.template.Services.IUserManagementServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,35 +18,52 @@ import java.util.Set;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = {"/users/v1"})
+@RequestMapping(value = {"/users"})
 public class UserControllers {
 
 	@Autowired
 	UserDAO userDAO;
 
-	@RequestMapping(method = RequestMethod.POST)
-	public Resources<UserDTO> saveUser(@RequestBody User requestData, HttpServletResponse servletResponse, HttpServletRequest servletRequest){
+	@Autowired
+	IUserManagementServices userServices;
+
+	@RequestMapping(value = {"/v1"}, method = RequestMethod.POST)
+	public Resources<UserDTO> saveUser(@RequestBody User requestData, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
 		Resources<UserDTO> responseData = new Resources<>();
 		UserDTO dto = new UserDTO();
-		try{
+		try {
 			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 			Validator validator = factory.getValidator();
 			Set<ConstraintViolation<User>> violations = validator.validate(requestData);
 			Optional<ConstraintViolation<User>> validatedObject = violations.stream().findFirst();
-			if (validatedObject.isEmpty()){
+			if (validatedObject.isEmpty()) {
 				dto.setUser(userDAO.addUser(requestData.getName()));
 				responseData.throwSucceedResponse(dto);
-			}else{
-				responseData.throwResponseWithCode("405","Bad Request "+validatedObject.get().getMessage(),null);
+			} else {
+				responseData.throwResponseWithCode("405", "Bad Request " + validatedObject.get().getMessage(), null);
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			responseData.throwExceptionResponse(e.getMessage());
 		}
 
 		return responseData;
 	}
 
-	@RequestMapping(value = {"/all"}, method = RequestMethod.GET)
+	@RequestMapping(value = {"/v2"}, method = RequestMethod.POST)
+	public Resources<UserDTO> saveUserv2(@Valid @RequestBody User requestData, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
+		Resources<UserDTO> responseData = new Resources<>();
+		UserDTO dto = new UserDTO();
+		try {
+			dto.setUser(userDAO.addUser(requestData.getName()));
+			responseData.throwSucceedResponse(dto);
+		} catch (Exception e) {
+			responseData.throwExceptionResponse(e.getMessage());
+		}
+
+		return responseData;
+	}
+
+	@RequestMapping(value = {"/v1/all"}, method = RequestMethod.GET)
 	public Resources<UserDTO> getUserAll(HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
 		Resources<UserDTO> responseData = new Resources<>();
 		UserDTO userDomain = new UserDTO();
@@ -61,7 +79,7 @@ public class UserControllers {
 	}
 
 	///NOTES : @PathVariable refering to {id}
-	@RequestMapping(value = {"/{id}"}, method = RequestMethod.GET)
+	@RequestMapping(value = {"/v1/{id}"}, method = RequestMethod.GET)
 	public Resources<UserDTO> getUserById(@PathVariable String id, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
 		Resources<UserDTO> responseData = new Resources<>();
 		UserDTO userDomain = new UserDTO();
@@ -83,17 +101,17 @@ public class UserControllers {
 		return responseData;
 	}
 
-	@RequestMapping(value = {"/{id}"}, method = RequestMethod.DELETE)
+	@RequestMapping(value = {"/v1/{id}"}, method = RequestMethod.DELETE)
 	public Resources<UserDTO> deleteUserById(@PathVariable String id, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
 		Resources<UserDTO> responseData = new Resources<>();
 
 		try {
 			int tempId = Integer.parseInt(id);
 			UserModel deletedData = this.userDAO.deleteUser(tempId);
-			if (deletedData != null){
+			if (deletedData != null) {
 				responseData.throwSucceedResponse(null);
-			}else{
-				responseData.throwResponseWithCode("03","data not found",null);
+			} else {
+				responseData.throwResponseWithCode("03", "data not found", null);
 			}
 
 			servletResponse.setStatus(200);
