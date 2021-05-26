@@ -20,25 +20,19 @@ import java.util.UUID;
 @RestController
 @RequestMapping(value = {"/users"})
 public class UserControllers {
-
-	@Autowired
-	UserDAO userDAO;
-
 	@Autowired
 	IUserManagementServices userServices;
 
 	@RequestMapping(value = {"/v1"}, method = RequestMethod.POST)
 	public Resources<UserDTO> saveUser(@RequestBody User requestData, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
 		Resources<UserDTO> responseData = new Resources<>();
-		UserDTO dto = new UserDTO();
 		try {
 			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 			Validator validator = factory.getValidator();
 			Set<ConstraintViolation<User>> violations = validator.validate(requestData);
 			Optional<ConstraintViolation<User>> validatedObject = violations.stream().findFirst();
 			if (validatedObject.isEmpty()) {
-				dto.setUser(userDAO.addUser(requestData.getName()));
-				responseData.throwSucceedResponse(dto);
+				responseData = this.userServices.saveUser(requestData);
 			} else {
 				responseData.throwResponseWithCode("405", "Bad Request " + validatedObject.get().getMessage(), null);
 			}
@@ -52,10 +46,8 @@ public class UserControllers {
 	@RequestMapping(value = {"/v2"}, method = RequestMethod.POST)
 	public Resources<UserDTO> saveUserv2(@Valid @RequestBody User requestData, HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
 		Resources<UserDTO> responseData = new Resources<>();
-		UserDTO dto = new UserDTO();
 		try {
-			dto.setUser(userDAO.addUser(requestData.getName()));
-			responseData.throwSucceedResponse(dto);
+			responseData = this.userServices.saveUser(requestData);
 		} catch (Exception e) {
 			responseData.throwExceptionResponse(e.getMessage());
 		}
@@ -65,13 +57,13 @@ public class UserControllers {
 
 	@RequestMapping(value = {"/v1/all"}, method = RequestMethod.GET)
 	public Resources<UserDTO> getUserAll(HttpServletResponse servletResponse, HttpServletRequest servletRequest) {
-		Resources<UserDTO> responseData = new Resources<>();
+		Resources<UserDTO> responseData = new Resources<UserDTO>();
 		UserDTO userDomain = new UserDTO();
 
 		Gson json = new Gson();
 		UUID ioGuid = UUID.randomUUID();
 
-		userDomain.setUsers(userDAO.findAll());
+		responseData = this.userServices.getAllUser();
 
 		responseData.throwSucceedResponse(userDomain);
 
@@ -89,9 +81,8 @@ public class UserControllers {
 
 		try {
 			int tempId = Integer.parseInt(id);
-			userDomain.setUser(userDAO.findById(tempId));
+			responseData =  this.userServices.getUserById(tempId);
 
-			responseData.throwSucceedResponse(userDomain);
 			servletResponse.setStatus(200);
 		} catch (Exception e) {
 			responseData.throwExceptionResponse(e.getMessage());
@@ -107,13 +98,7 @@ public class UserControllers {
 
 		try {
 			int tempId = Integer.parseInt(id);
-			UserModel deletedData = this.userDAO.deleteUser(tempId);
-			if (deletedData != null) {
-				responseData.throwSucceedResponse(null);
-			} else {
-				responseData.throwResponseWithCode("03", "data not found", null);
-			}
-
+			this.userServices.deleteUser(tempId);
 			servletResponse.setStatus(200);
 		} catch (Exception e) {
 			responseData.throwExceptionResponse(e.getMessage());

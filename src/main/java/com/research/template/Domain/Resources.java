@@ -14,6 +14,12 @@ public class Resources<T>{
 	private T responseObject;
 
 
+	public Resources(){
+		this.responseCode = "99";
+		this.responseMessage = "Failed To Get Resources";
+		this.responseObject = null;
+	}
+
 	public void throwSucceedResponse(T responseObject){
 		this.responseCode = "200";
 		this.responseMessage = "OK";

@@ -11,6 +11,19 @@ public class UserDTO {
 	private List<UserModel> users;
 	private UserModel user;
 
+	public UserDTO(){
+		super();
+		this.users = null;
+		this.user = null;
+	}
+
+	public UserDTO(UserModel user){
+		this.user =  user;
+	}
+
+	public UserDTO(List<UserModel> users){
+		this.users = users;
+	}
 
 	public UserModel getUser() {
 		return user;
