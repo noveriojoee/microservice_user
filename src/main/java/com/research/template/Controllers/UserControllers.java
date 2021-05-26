@@ -65,7 +65,6 @@ public class UserControllers {
 
 		responseData = this.userServices.getAllUser();
 
-		responseData.throwSucceedResponse(userDomain);
 
 		return responseData;
 	}
@@ -98,7 +97,7 @@ public class UserControllers {
 
 		try {
 			int tempId = Integer.parseInt(id);
-			this.userServices.deleteUser(tempId);
+			responseData = this.userServices.deleteUser(tempId);
 			servletResponse.setStatus(200);
 		} catch (Exception e) {
 			responseData.throwExceptionResponse(e.getMessage());
