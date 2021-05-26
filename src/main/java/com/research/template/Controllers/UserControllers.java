@@ -1,15 +1,12 @@
 package com.research.template.Controllers;
 
 import com.google.gson.Gson;
-import com.research.template.DAO.UserDAO;
 import com.research.template.Domain.DTO.UserDTO;
 import com.research.template.Domain.Resources;
 import com.research.template.Domain.Bean.User;
-import com.research.template.Model.UserModel;
 import com.research.template.Services.IUserManagementServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.*;

@@ -1,7 +1,9 @@
 package com.research.template.DAO;
 
 
+import com.research.template.DAO.Repository.IUserRepositories;
 import com.research.template.Model.UserModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -10,6 +12,10 @@ import java.util.Optional;
 
 @Component
 public class UserDAO {
+
+	@Autowired
+	IUserRepositories userRepository;
+
 	private static List<UserModel> users = new ArrayList<>();
 
 	static{
@@ -24,6 +30,8 @@ public class UserDAO {
 		UserModel createdUser = new UserModel(id,name);
 		users.add(createdUser);
 
+		this.userRepository.save(createdUser);
+
 		return createdUser;
 	}
 
@@ -31,6 +39,7 @@ public class UserDAO {
 		Optional<UserModel> userData = users.stream().filter(x -> x.getId() == id).findFirst();
 		if (userData.isPresent()){
 			users.remove(userData.get());
+			this.userRepository.delete(userData.get());
 			return userData.get();
 		}else{
 			return null;
@@ -38,17 +47,12 @@ public class UserDAO {
 	}
 
 	public List<UserModel> findAll(){
-		return users;
+		return userRepository.findAll();
 	}
 
 	public UserModel findById(int id){
-		UserModel result = null;
-		for (UserModel data:users) {
-			if (data.getId() == id){
-				result = data;
-			}
-		}
-		return result;
+		Optional<UserModel> result = userRepository.findById(id);
+		return result.get();
 	}
 
 	private int getSize(){
